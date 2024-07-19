@@ -1,0 +1,44 @@
+name: Automate Build and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - gh-pages # Trigger on push to main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 'latest'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build React app
+        run: yarn run build
+
+      - name: Deploy to GitHub Pages
+        run: |
+          git config --global user.email "43179518+SrilakshmiSripathi@users.noreply.github.com"
+          git config --global user.name "Srilakshmi Sripathi"
+
+          # Checkout the gh-pages branch; create it if it doesn't exist
+          git checkout -B gh-pages
+
+          # Delete existing files except .git
+          git rm -rf .
+
+          # Copy the built files from the main branch build folder
+          cp -r ../${{srilakshmisripathi.github.io}}/build/* .
+
+          # Commit and push the changes
+          git add .
+          git commit -m "Deploying to gh-pages from GitHub Actions"
+          git push origin gh-pages
